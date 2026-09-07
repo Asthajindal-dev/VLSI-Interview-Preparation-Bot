@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 
 # ---------------- PAGE SETTINGS ----------------
 
@@ -433,6 +434,9 @@ if "page" not in st.session_state:
 if "topic" not in st.session_state:
     st.session_state.topic = None
 
+if "difficulty" not in st.session_state:
+    st.session_state.difficulty = None
+
 if "question_number" not in st.session_state:
     st.session_state.question_number = 0
 
@@ -448,8 +452,9 @@ if "last_answer" not in st.session_state:
 
 # ---------------- RESET QUIZ ----------------
 
-def start_quiz(topic):
+def start_quiz(topic, difficulty):
     st.session_state.topic = topic
+    st.session_state.difficulty = difficulty
     st.session_state.page = "quiz"
     st.session_state.question_number = 0
     st.session_state.score = 0
@@ -480,33 +485,44 @@ if st.session_state.page == "home":
             "🔵 Digital Electronics",
             use_container_width=True
         ):
-            start_quiz("Digital Electronics")
+           st.session_state.topic = "Digital Electronics"
+           st.session_state.page = "difficulty"
+           st.rerun()
 
         if st.button(
             "🟢 Verilog HDL",
             use_container_width=True
         ):
-            start_quiz("Verilog HDL")
+            st.session_state.topic = "Verilog HDL"
+            st.session_state.page = "difficulty"
+            st.rerun()
 
         if st.button(
             "🟣 SystemVerilog",
             use_container_width=True
         ):
-            start_quiz("SystemVerilog")
+            st.session_state.topic = "SystemVerilog"
+            st.session_state.page = "difficulty"
+            st.rerun()
+        
 
     with col2:
 
         if st.button(
            "🟠 CMOS Fundamentals",
-           use_container_width=True
-      ):
-           start_quiz("CMOS Fundamentals")
+            use_container_width=True
+        ):
+           st.session_state.topic = "CMOS Fundamentals"
+           st.session_state.page = "difficulty"
+           st.rerun()
 
         if st.button(
-          "🔴 Design Verification",
-          use_container_width=True
+           "🔴 Design Verification",
+           use_container_width=True
         ):
-          start_quiz("Design Verification")
+           st.session_state.topic = "Design Verification"
+           st.session_state.page = "difficulty"
+           st.rerun()
     st.divider()
 
     st.caption("VLSI Interview Preparation Bot • Basic Version")
@@ -514,6 +530,62 @@ if st.session_state.page == "home":
 
 # ---------------- QUIZ PAGE ----------------
 
+# ---------------- DIFFICULTY PAGE ----------------
+
+elif st.session_state.page == "difficulty":
+
+    st.title("🎯 Select Difficulty")
+
+    st.write(
+        f"Topic: **{st.session_state.topic}**"
+    )
+
+    st.divider()
+
+    st.subheader("Choose your difficulty level:")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button(
+            "🟢 Easy",
+            use_container_width=True
+        ):
+            start_quiz(
+                st.session_state.topic,
+                "Easy"
+            )
+
+    with col2:
+        if st.button(
+            "🟡 Medium",
+            use_container_width=True
+        ):
+            start_quiz(
+                st.session_state.topic,
+                "Medium"
+            )
+
+    with col3:
+        if st.button(
+            "🔴 Hard",
+            use_container_width=True
+        ):
+            start_quiz(
+                st.session_state.topic,
+                "Hard"
+            )
+
+    st.divider()
+
+    if st.button(
+        "🏠 Back to Topics",
+        use_container_width=True
+    ):
+        st.session_state.page = "home"
+        st.session_state.topic = None
+        st.session_state.difficulty = None
+        st.rerun()
 elif st.session_state.page == "quiz":
 
     # Select question set
@@ -540,6 +612,17 @@ elif st.session_state.page == "quiz":
 
     else:
         questions = []
+
+    # Select questions according to difficulty
+
+    if st.session_state.difficulty == "Easy":
+        questions = questions[:4]
+
+    elif st.session_state.difficulty == "Medium":
+        questions = questions[4:7]
+
+    elif st.session_state.difficulty == "Hard":
+         questions = questions[7:10]
 
     question_index = st.session_state.question_number
 
@@ -599,7 +682,11 @@ elif st.session_state.page == "quiz":
         question = questions[question_index]
 
         st.title(
-            f"{emoji} {st.session_state.topic} Practice"
+           f"{emoji} {st.session_state.topic} Practice"
+        )
+
+        st.caption(
+           f"🎯 Difficulty: {st.session_state.difficulty}"
         )
 
         st.progress(
